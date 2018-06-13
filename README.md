@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # acme-product-management
+=======
+# Acme Product Management
+>>>>>>> Created Project
 This application is built for acme which allows them to manage their products using Angular. The main purpose of developing this application is to get hands on the Angular Framework.
 
 ### Using this application user will be able to:
