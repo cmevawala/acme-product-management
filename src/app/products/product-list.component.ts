@@ -1,5 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { IProduct } from './product';
+import { ProductService } from "./products.service";
+
 
 @Component({
     selector: "pm-products",
@@ -7,37 +9,20 @@ import { IProduct } from './product';
     styleUrls: ['./product-list-component.css']
 })
 export class ProductListComponent {
+    /* Fields */
+    _listFilter: string = '';
+
     pageTitle: string = "Product List";
     imageWidth: number = 50;
     imageHeight: number = 50;
     imageMargin: number = 2;
-    _listFilter: string = '';
     showImage: boolean = false;
-    products: IProduct[] = [
-        {
-            "productId": 1,
-            "productName": "Product 1",
-            "productCode": "P1-10001",
-            "releaseDate": "22-2-2015",
-            "description": "This is product 1",
-            "price": 32.99,
-            "starRating": 3,
-            "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtEMMV0__-FFXNQMqFDyK6fu-xdxa_3vwOYm_6jczRP-dILOoJzQ",
-        },
-        {
-            "productId": 2,
-            "productName": "Product 2",
-            "productCode": "P2-10002",
-            "releaseDate": "23-2-2015",
-            "description": "This is product 2",
-            "price": 22.10,
-            "starRating": 2,
-            "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjWb2_EX-iZcleBjLtiFslLrVNhXcWY7NcG5CjKdOZFqQZT-GHsQ",
-        }
-    ];
 
+    products: IProduct[] = [];
     filteredProducts: IProduct[] = [];
+    errorMessage: string;
 
+    /* Properties */
     get listFilter() {
         return this._listFilter;
     }
@@ -47,16 +32,22 @@ export class ProductListComponent {
         this.filteredProducts = this._listFilter ? this.performFilter(this.listFilter) : this.products;
     }
 
-
-    constructor() {
-        this.filteredProducts = this.products;
-        this.listFilter = 'product';
+    /* Constructor */
+    constructor(private _productService: ProductService) {
     }
 
+
+    /* Life Cycle */
     ngOnInit() {
         console.log("On Init");
+        this._productService.getProducts().subscribe(products => { 
+                                            this.products = products;
+                                            this.filteredProducts = this.products;
+                                        }, error => this.errorMessage = <any>error);
+        
     };
 
+    /* Methods */
     performFilter(filterBy: string): IProduct[] {
         filterBy = filterBy.toLowerCase()
         return this.products.filter((product: IProduct) => product.productName.toLowerCase().indexOf(filterBy) !== -1);
