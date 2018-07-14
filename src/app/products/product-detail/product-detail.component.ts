@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { IProduct } from '../product';
+import { ProductService } from '../products.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -10,24 +11,24 @@ import { IProduct } from '../product';
 })
 export class ProductDetailComponent implements OnInit {
 
-  pageTitle: string = "Product Detail: ";
-  product: IProduct;
+  pageTitle = 'Product Detail';
+  errorMessage = '';
+  product: IProduct | undefined;
 
-  constructor(private _activatedRoute: ActivatedRoute, private _router: Router) { }
+  constructor(private _activatedRoute: ActivatedRoute, private _router: Router, private _productService: ProductService) { }
 
   ngOnInit() {
-      let id = +this._activatedRoute.snapshot.paramMap.get('id');
-      this.pageTitle += `${id}`;
-      this.product =   {
-        "productId": id,
-        "productName": "Video Game Controller",
-        "productCode": "GMG-0042",
-        "releaseDate": "October 15, 2015",
-        "description": "Standard two-button video game controller",
-        "price": 35.95,
-        "starRating": 4.6,
-        "imageUrl": "https://openclipart.org/image/300px/svg_to_png/120337/xbox-controller_01.png"
-      };
+    const param = this._activatedRoute.snapshot.paramMap.get('id');
+    if (param) {
+      const id = +param;
+      this.getProduct(id);
+    }
+  }
+
+  getProduct(id: number) {
+    this._productService.getProduct(id).subscribe(
+      product => this.product = product,
+      error => this.errorMessage = <any>error);
   }
 
   onBack(): void {
